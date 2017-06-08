@@ -2,7 +2,7 @@
 import numpy as np
 import pylab as pl
 
-train = np.random.rand(5,3)
+train = np.random.rand(15,3)
 obj = train[:,0] + train[:,1]*2 + train[:,0]*3 
 
 maxStep = 2000
@@ -14,9 +14,11 @@ w2 = np.random.rand(2*N-1,1)
 dw1 = np.zeros((N,2*N-1))
 dw2 = np.zeros((2*N-1,1))
 e = np.array([[1]])
-eList = []
-cnt = 0
 
+flagCnt = 0
+eList = [0]
+cnt = 0
+testCnt = 0
 while e>0.001:
     e = np.array([[0]])
     dw1 = np.zeros((N,2*N-1))
@@ -38,8 +40,19 @@ while e>0.001:
         dw1 += (y-output)*output*x.T*((1-output)*w2*v*(1-v)).T
                
     eList.append(float(e))
-    w2 += step*dw2
-    w1 += step*dw1
+    
+    if abs(e-eList[-2])/e < 0.001:
+        flagCnt += 1
+    else:
+        flagCnt = 0
+    
+    if flagCnt > 5:
+       w1 = np.random.rand(N,2*N-1)
+       w2 = np.random.rand(2*N-1,1)
+       testCnt +=1
+    else:
+        w2 += step*dw2
+        w1 += step*dw1
     
     cnt += 1
     if cnt>maxStep:
